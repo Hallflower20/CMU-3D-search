@@ -186,7 +186,7 @@ epoch = 210
 kf = KFold(n_splits=num_folds, shuffle=True, random_state=2)
 
 # Prepare for tracking results
-fold_no = 4
+fold_no = 1
 
 # Iterate over each fold
 for train_index, test_index in kf.split(x, y):
