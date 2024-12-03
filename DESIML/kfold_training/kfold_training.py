@@ -1,8 +1,6 @@
 from glob import glob
 
 import numpy as np
-import matplotlib as mpl
-import matplotlib.pyplot as plt
 import tensorflow
 from joblib import Parallel, delayed
 
@@ -24,7 +22,6 @@ from keras.models import load_model
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import roc_curve, auc, precision_recall_curve, average_precision_score
 from sklearn.metrics import confusion_matrix
-
 
 from tensorflow.keras.layers import Input, Conv1D, BatchNormalization, Activation, MaxPooling1D, Flatten, Dense, Dropout, Add
 from tensorflow.keras.models import Model
@@ -105,26 +102,26 @@ def network_new(input_shape, ncat, learning_rate=0.00021544346900318823, reg=0.0
     
     return model
 
-galaxy_flux_desi = np.load("DESI_spectra/galaxy_flux.npy")
-snia_flux_desi = np.load("DESI_spectra/snia_flux.npy")
-snib_flux_desi = np.load("DESI_spectra/snib_flux.npy")
-snibc_flux_desi = np.load("DESI_spectra/snibc_flux.npy")
-snic_flux_desi = np.load("DESI_spectra/snic_flux.npy")
-sniin_flux_desi = np.load("DESI_spectra/sniin_flux.npy")
-sniilp_flux_desi = np.load("DESI_spectra/sniilp_flux.npy")
-sniip_flux_desi = np.load("DESI_spectra/sniip_flux.npy")
-kn_flux = np.load("DESI_spectra/kn_flux.npy")
+galaxy_flux_desi = np.load("../DESI_spectra/galaxy_flux.npy")
+snia_flux_desi = np.load("../DESI_spectra/snia_flux.npy")
+snib_flux_desi = np.load("../DESI_spectra/snib_flux.npy")
+snibc_flux_desi = np.load("../DESI_spectra/snibc_flux.npy")
+snic_flux_desi = np.load("../DESI_spectra/snic_flux.npy")
+sniin_flux_desi = np.load("../DESI_spectra/sniin_flux.npy")
+sniilp_flux_desi = np.load("../DESI_spectra/sniilp_flux.npy")
+sniip_flux_desi = np.load("../DESI_spectra/sniip_flux.npy")
+kn_flux = np.load("../DESI_spectra/kn_flux.npy")
 
-tde_flux_ztf = np.load("ztf_spectra/tde_flux.npy")
-tde_flux_paper = np.load("tde_flux_1.npy")
-snia_flux_ztf = np.load("ztf_spectra/snia_flux.npy")
-snii_flux_ztf = np.load("ztf_spectra/snii_flux.npy")
-snib_flux_ztf = np.load("ztf_spectra/snib_flux.npy")
-snic_flux_ztf = np.load("ztf_spectra/snic_flux.npy")
-galaxy_flux_ztf = np.load("ztf_spectra/gal_flux.npy")
-agn_flux = np.load("ztf_spectra/agn_flux.npy")
-nls_flux = np.load("ztf_spectra/nls_flux.npy")
-qso_flux = np.load("ztf_spectra/qso_flux.npy")
+tde_flux_ztf = np.load("../ztf_spectra/tde_flux.npy")
+tde_flux_paper = np.load("../tde_flux_1.npy")
+snia_flux_ztf = np.load("../ztf_spectra/snia_flux.npy")
+snii_flux_ztf = np.load("../ztf_spectra/snii_flux.npy")
+snib_flux_ztf = np.load("../ztf_spectra/snib_flux.npy")
+snic_flux_ztf = np.load("../ztf_spectra/snic_flux.npy")
+galaxy_flux_ztf = np.load("../ztf_spectra/gal_flux.npy")
+agn_flux = np.load("../ztf_spectra/agn_flux.npy")
+nls_flux = np.load("../ztf_spectra/nls_flux.npy")
+qso_flux = np.load("../ztf_spectra/qso_flux.npy")
 
 snia_flux = np.vstack([snia_flux_desi, snia_flux_ztf])
 snibc_flux = np.vstack([snib_flux_desi, snib_flux_ztf, snibc_flux_desi, snic_flux_ztf, snic_flux_desi])
@@ -180,7 +177,7 @@ for i in range(len(weights)):
 num_folds = 5
 
 batch = 30
-epoch = 210
+epoch = 180
 
 # Initialize KFold
 kf = KFold(n_splits=num_folds, shuffle=True, random_state=2)
@@ -192,7 +189,7 @@ fold_no = 1
 for train_index, test_index in kf.split(x, y):
     print(f"Training fold {fold_no}...")
     
-    dropout = 0.5
+    dropout = 0.6
     model = network_new((nbins, 1), ncat=y.shape[1], dropout = dropout)
 
     # Split the data into train and test for this fold
@@ -203,8 +200,8 @@ for train_index, test_index in kf.split(x, y):
     reduce_lr = ReduceLROnPlateau(
         monitor='val_loss',
         factor=0.5,
-        patience=5,
-        min_lr=1e-7,
+        patience=10,
+        min_lr=1e-6,
         verbose=1
     )
     
